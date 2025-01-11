@@ -1,4 +1,3 @@
-// main.cpp
 #include <iostream>
 #include <string>
 #include <vector>
@@ -11,7 +10,7 @@
 
 namespace fs = std::filesystem;
 
-// Function to display the help message
+// Display help message
 void displayHelp() {
     std::cout << "DartSync Backup Service\n\n";
     std::cout << "Usage:\n";
@@ -40,29 +39,29 @@ void displayHelp() {
     std::cout << "  DartSync.exe backup_scheduled --source \"C:\\MyFolder\" --dest \"D:\\Backup\" --filetypes .txt --schedule custom --interval 3600\n";
 }
 
-// Function to parse file types
+// Parse file types from space-separated tokens
 std::vector<std::string> parseFileTypes(const std::string& input) {
     std::vector<std::string> fileTypes;
     if (input == "all") {
-        // Empty vector signifies all file types
+        // Empty vector => all file types
         return fileTypes;
     } else {
-        // Split input by spaces
-        std::string type;
         std::istringstream iss(input);
+        std::string type;
         while (iss >> type) {
-            if (type[0] != '.') {
+            // Ensure a leading dot
+            if (!type.empty() && type[0] != '.') {
                 type = "." + type;
             }
             fileTypes.push_back(type);
         }
-        return fileTypes;
     }
+    return fileTypes;
 }
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        std::cout << "Error: No command provided.\n\n";
+        std::cerr << "Error: No command provided.\n\n";
         displayHelp();
         return 1;
     }
@@ -75,7 +74,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
     else if (command == "backup_once" || command == "backup_scheduled") {
-        // Initialize variables with default values
+        // Defaults
         std::string sourcePath;
         std::string outputPath;
         std::vector<std::string> fileTypes;
@@ -84,14 +83,13 @@ int main(int argc, char* argv[]) {
         std::string scheduleType;
         int intervalSeconds = 0;
 
-        // Parse arguments
+        // Parse command-line args
         for (int i = 2; i < argc; ++i) {
             std::string arg = argv[i];
             if ((arg == "-s") || (arg == "--source")) {
                 if (i + 1 < argc) {
                     sourcePath = argv[++i];
-                }
-                else {
+                } else {
                     std::cerr << "Error: --source requires a value.\n";
                     return 1;
                 }
@@ -99,8 +97,7 @@ int main(int argc, char* argv[]) {
             else if ((arg == "-d") || (arg == "--dest")) {
                 if (i + 1 < argc) {
                     outputPath = argv[++i];
-                }
-                else {
+                } else {
                     std::cerr << "Error: --dest requires a value.\n";
                     return 1;
                 }
@@ -109,8 +106,7 @@ int main(int argc, char* argv[]) {
                 if (i + 1 < argc) {
                     std::string typesInput = argv[++i];
                     fileTypes = parseFileTypes(typesInput);
-                }
-                else {
+                } else {
                     std::cerr << "Error: --filetypes requires a value.\n";
                     return 1;
                 }
@@ -118,8 +114,7 @@ int main(int argc, char* argv[]) {
             else if ((arg == "-k") || (arg == "--keyword")) {
                 if (i + 1 < argc) {
                     keyword = argv[++i];
-                }
-                else {
+                } else {
                     std::cerr << "Error: --keyword requires a value.\n";
                     return 1;
                 }
@@ -133,8 +128,7 @@ int main(int argc, char* argv[]) {
                         std::cerr << "Error: --maxsize requires a numerical value.\n";
                         return 1;
                     }
-                }
-                else {
+                } else {
                     std::cerr << "Error: --maxsize requires a value.\n";
                     return 1;
                 }
@@ -142,9 +136,9 @@ int main(int argc, char* argv[]) {
             else if ((arg == "-t") || (arg == "--schedule")) {
                 if (i + 1 < argc) {
                     scheduleType = argv[++i];
-                    std::transform(scheduleType.begin(), scheduleType.end(), scheduleType.begin(), ::tolower);
-                }
-                else {
+                    std::transform(scheduleType.begin(), scheduleType.end(),
+                                   scheduleType.begin(), ::tolower);
+                } else {
                     std::cerr << "Error: --schedule requires a value.\n";
                     return 1;
                 }
@@ -154,7 +148,7 @@ int main(int argc, char* argv[]) {
                     try {
                         intervalSeconds = std::stoi(argv[++i]);
                         if (intervalSeconds <= 0) {
-                            std::cerr << "Error: --interval must be a positive integer.\n";
+                            std::cerr << "Error: --interval must be positive.\n";
                             return 1;
                         }
                     }
@@ -162,8 +156,7 @@ int main(int argc, char* argv[]) {
                         std::cerr << "Error: --interval requires a numerical value.\n";
                         return 1;
                     }
-                }
-                else {
+                } else {
                     std::cerr << "Error: --interval requires a value.\n";
                     return 1;
                 }
@@ -175,7 +168,7 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Validate required arguments
+        // Check required options
         if (sourcePath.empty()) {
             std::cerr << "Error: Source directory is required.\n";
             return 1;
@@ -185,28 +178,30 @@ int main(int argc, char* argv[]) {
             return 1;
         }
 
+        // Execute the command
         if (command == "backup_once") {
-            // Perform a single backup
             backupManager.backupOnce(sourcePath, outputPath, fileTypes, keyword, maxFileSizeMB);
-        }
-        else if (command == "backup_scheduled") {
-            // Validate scheduleType
+        } else {
+            // "backup_scheduled"
             if (scheduleType.empty()) {
-                std::cerr << "Error: Schedule type is required for 'backup_scheduled' command.\n";
+                std::cerr << "Error: Schedule type is required.\n";
                 return 1;
             }
-            if (scheduleType != "daily" && scheduleType != "weekly" && scheduleType != "monthly" && scheduleType != "custom") {
-                std::cerr << "Error: Invalid schedule type. Must be one of: daily, weekly, monthly, custom.\n";
+            if (scheduleType != "daily" && scheduleType != "weekly" &&
+                scheduleType != "monthly" && scheduleType != "custom") {
+                std::cerr << "Error: Invalid schedule type.\n";
                 return 1;
             }
             if (scheduleType == "custom" && intervalSeconds == 0) {
-                std::cerr << "Error: Interval in seconds is required for custom schedule.\n";
+                std::cerr << "Error: --interval is required for custom schedule.\n";
                 return 1;
             }
 
-            // Perform scheduled backups
             std::cout << "Starting scheduled backups (" << scheduleType << ")\n";
-            backupManager.backupScheduled(sourcePath, outputPath, fileTypes, keyword, maxFileSizeMB, scheduleType, intervalSeconds);
+            backupManager.backupScheduled(
+                sourcePath, outputPath, fileTypes, keyword, maxFileSizeMB,
+                scheduleType, intervalSeconds
+            );
         }
     }
     else {

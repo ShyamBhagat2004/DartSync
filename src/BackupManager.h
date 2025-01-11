@@ -1,4 +1,3 @@
-// BackupManager.h
 #ifndef BACKUPMANAGER_H
 #define BACKUPMANAGER_H
 
@@ -12,10 +11,10 @@ public:
 
     // Performs a one-time backup
     void backupOnce(const std::string& sourcePath,
-                   const std::string& outputPath,
-                   const std::vector<std::string>& fileTypes,
-                   const std::string& keyword,
-                   size_t maxFileSizeMB);
+                    const std::string& outputPath,
+                    const std::vector<std::string>& fileTypes,
+                    const std::string& keyword,
+                    size_t maxFileSizeMB);
 
     // Performs a scheduled backup based on the scheduleType and interval
     void backupScheduled(const std::string& sourcePath,
@@ -29,10 +28,10 @@ public:
 private:
     // Core backup functionality
     void performBackup(const std::string& sourcePath,
-                      const std::string& outputPath,
-                      const std::vector<std::string>& fileTypes,
-                      const std::string& keyword,
-                      size_t maxFileSizeMB);
+                       const std::string& outputPath,
+                       const std::vector<std::string>& fileTypes,
+                       const std::string& keyword,
+                       size_t maxFileSizeMB);
 
     // Generates a versioned backup path based on the current timestamp
     std::string getVersionedPath(const std::string& destination);
