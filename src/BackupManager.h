@@ -4,7 +4,6 @@
 
 #include <string>
 #include <vector>
-#include <chrono>
 
 class BackupManager {
 public:
@@ -24,7 +23,7 @@ public:
                          const std::string& keyword,
                          size_t maxFileSizeMB,
                          const std::string& scheduleType,
-                         int interval); // interval represents seconds for custom
+                         int intervalSeconds); // interval represents seconds for custom
 
 private:
     // Core backup function applying all filters
