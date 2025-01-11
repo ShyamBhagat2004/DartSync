@@ -13,7 +13,7 @@ EditStreamBuf::~EditStreamBuf() {
 std::streambuf::int_type EditStreamBuf::overflow(int_type ch) {
     if (ch != traits_type::eof()) {
         m_buffer.push_back((char)ch);
-        // If newline or big buffer, flush
+        // If newline or big buffer, flush to the edit
         if (ch == '\n' || m_buffer.size() > 200) {
             flushBuffer();
         }
@@ -31,7 +31,7 @@ void EditStreamBuf::flushBuffer() {
         // Convert to wide
         std::wstring wtext(m_buffer.begin(), m_buffer.end());
 
-        // Append to edit
+        // Append to edit control
         int len = GetWindowTextLengthW(m_hEdit);
         SendMessageW(m_hEdit, EM_SETSEL, (WPARAM)len, (LPARAM)len);
         SendMessageW(m_hEdit, EM_REPLACESEL, FALSE, (LPARAM)wtext.c_str());

@@ -4,12 +4,13 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
+#include <thread>          // <-- For std::thread
 #include "BackupManager.h"
 #include "ConsoleRedirect.h"
 
-#pragma comment(lib, "shell32.lib") // Sometimes needed for SHBrowseForFolderW
+#pragma comment(lib, "shell32.lib") // might be needed for SHBrowseForFolderW
 
-// GUI Controls
+// GUI controls
 static HWND hTitleStatic      = nullptr;
 static HWND hSourceLabel      = nullptr;
 static HWND hSourcePickBtn    = nullptr;
@@ -26,13 +27,14 @@ static HWND hMonthlyRadio     = nullptr;
 static HWND hConsoleLabel     = nullptr;
 static HWND hConsoleOutput    = nullptr; // multiline edit
 
-// We'll store user selections in global vars
+// Global vars to store user selections
 static std::wstring gSourcePath;
 static std::wstring gDestPath;
-static std::wstring gFrequency = L"once"; // Default
+static std::wstring gFrequency = L"once"; // default
 
+// The console streambuf
 static EditStreamBuf* gEditBuf = nullptr;
-static BackupManager  gBackupManager; // Backup logic
+static BackupManager  gBackupManager; // Our backup logic
 
 // Forward declarations
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -41,10 +43,11 @@ void UpdateChosenPathLabel(HWND labelHwnd, const std::wstring& path);
 void OnRadioFrequency(HWND radioClicked);
 void BuildAndRunCommand();
 
+// The main WinMain
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow)
 {
-    CoInitialize(nullptr); // recommended for SHBrowseForFolder
+    CoInitialize(nullptr);
     WNDCLASSW wc = {0};
     wc.lpfnWndProc   = WndProc;
     wc.hInstance     = hInstance;
@@ -82,7 +85,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     return (int)msg.wParam;
 }
 
-// Folder picker with SHBrowseForFolderW
 void PickFolder(std::wstring& outFolder)
 {
     BROWSEINFOW bi = {0};
@@ -99,14 +101,12 @@ void PickFolder(std::wstring& outFolder)
     }
 }
 
-// Update label to "Chosen: X:\somepath"
 void UpdateChosenPathLabel(HWND labelHwnd, const std::wstring& path)
 {
     std::wstring text = L"Chosen: " + path;
     SetWindowTextW(labelHwnd, text.c_str());
 }
 
-// Radio button logic
 void OnRadioFrequency(HWND radioClicked)
 {
     if (radioClicked == hOnceRadio) {
@@ -118,7 +118,7 @@ void OnRadioFrequency(HWND radioClicked)
     }
 }
 
-// Build the command from user picks, call BackupManager
+// The function that calls the backup
 void BuildAndRunCommand()
 {
     if (gSourcePath.empty() || gDestPath.empty()) {
@@ -213,7 +213,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 hWnd, nullptr, nullptr, nullptr
             );
 
-            // Radio: once, daily, monthly
             hOnceRadio = CreateWindowW(
                 L"BUTTON", L"Once",
                 WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
@@ -233,10 +232,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 hWnd, (HMENU)203, nullptr, nullptr
             );
 
-            // "Once" is default
+            // "Once" default
             SendMessageW(hOnceRadio, BM_SETCHECK, BST_CHECKED, 0);
 
-            // Start backup button
+            // Start Backup button
             CreateWindowW(
                 L"BUTTON", L"Start Backup",
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
@@ -246,7 +245,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
             // Console label
             hConsoleLabel = CreateWindowW(
-                L"STATIC", L"Console output:",
+                L"STATIC", L"Console:",
                 WS_CHILD | WS_VISIBLE,
                 20, 210, 100, 20,
                 hWnd, nullptr, nullptr, nullptr
@@ -286,8 +285,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 OnRadioFrequency((HWND)lParam);
             }
             else if (wmId == 301) {
-                // Start backup
-                BuildAndRunCommand();
+                // Start Backup button
+                // Launch in background thread so GUI doesn't freeze
+                std::thread worker([](){
+                    BuildAndRunCommand();
+                });
+                worker.detach();
             }
         }
         break;

@@ -12,10 +12,8 @@ public:
     ~EditStreamBuf();
 
 protected:
-    // Write a character
-    virtual int_type overflow(int_type ch) override;
-    // Flush
-    virtual int sync() override;
+    virtual int_type overflow(int_type ch) override;  // Write char
+    virtual int sync() override;                      // Flush
 
 private:
     void flushBuffer();
