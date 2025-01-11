@@ -1,4 +1,6 @@
 
+![image](https://github.com/user-attachments/assets/d994a25d-17ef-40cd-9173-56d13acb86f7)
+
 # DartSyncGUI
 
 DartSyncGUI is a Windows-based GUI application for managing versioned backups of files and directories. It provides an intuitive interface for configuring backup source and destination paths, file type filters, and backup frequencies (one-time, daily, or monthly).
