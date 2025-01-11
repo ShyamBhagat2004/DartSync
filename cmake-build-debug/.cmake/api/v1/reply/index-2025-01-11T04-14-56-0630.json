@@ -4,7 +4,7 @@
 		"generator" : 
 		{
 			"multiConfig" : false,
-			"name" : "Ninja"
+			"name" : "MinGW Makefiles"
 		},
 		"paths" : 
 		{
@@ -35,7 +35,7 @@
 			}
 		},
 		{
-			"jsonFile" : "cache-v2-478751cb72e14af43aa6.json",
+			"jsonFile" : "cache-v2-dd2f5d16104d4aaca7d2.json",
 			"kind" : "cache",
 			"version" : 
 			{
@@ -66,7 +66,7 @@
 	{
 		"cache-v2" : 
 		{
-			"jsonFile" : "cache-v2-478751cb72e14af43aa6.json",
+			"jsonFile" : "cache-v2-dd2f5d16104d4aaca7d2.json",
 			"kind" : "cache",
 			"version" : 
 			{
