@@ -68,44 +68,46 @@ include CMakeFiles/DartSync.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/DartSync.dir/flags.make
 
-CMakeFiles/DartSync.dir/main.cpp.obj: CMakeFiles/DartSync.dir/flags.make
-CMakeFiles/DartSync.dir/main.cpp.obj: C:/Users/weare/CLionProjects/DartSync/main.cpp
-CMakeFiles/DartSync.dir/main.cpp.obj: CMakeFiles/DartSync.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\weare\CLionProjects\DartSync\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/DartSync.dir/main.cpp.obj"
-	C:\PROGRA~2\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DartSync.dir/main.cpp.obj -MF CMakeFiles\DartSync.dir\main.cpp.obj.d -o CMakeFiles\DartSync.dir\main.cpp.obj -c C:\Users\weare\CLionProjects\DartSync\main.cpp
+CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj: CMakeFiles/DartSync.dir/flags.make
+CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj: CMakeFiles/DartSync.dir/includes_CXX.rsp
+CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj: C:/Users/weare/CLionProjects/DartSync/src/BackupManager.cpp
+CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj: CMakeFiles/DartSync.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\weare\CLionProjects\DartSync\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj"
+	C:\PROGRA~2\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj -MF CMakeFiles\DartSync.dir\src\BackupManager.cpp.obj.d -o CMakeFiles\DartSync.dir\src\BackupManager.cpp.obj -c C:\Users\weare\CLionProjects\DartSync\src\BackupManager.cpp
 
-CMakeFiles/DartSync.dir/main.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/DartSync.dir/main.cpp.i"
-	C:\PROGRA~2\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\weare\CLionProjects\DartSync\main.cpp > CMakeFiles\DartSync.dir\main.cpp.i
+CMakeFiles/DartSync.dir/src/BackupManager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/DartSync.dir/src/BackupManager.cpp.i"
+	C:\PROGRA~2\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\weare\CLionProjects\DartSync\src\BackupManager.cpp > CMakeFiles\DartSync.dir\src\BackupManager.cpp.i
 
-CMakeFiles/DartSync.dir/main.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/DartSync.dir/main.cpp.s"
-	C:\PROGRA~2\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\weare\CLionProjects\DartSync\main.cpp -o CMakeFiles\DartSync.dir\main.cpp.s
+CMakeFiles/DartSync.dir/src/BackupManager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/DartSync.dir/src/BackupManager.cpp.s"
+	C:\PROGRA~2\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\weare\CLionProjects\DartSync\src\BackupManager.cpp -o CMakeFiles\DartSync.dir\src\BackupManager.cpp.s
 
-CMakeFiles/DartSync.dir/BackupManager.cpp.obj: CMakeFiles/DartSync.dir/flags.make
-CMakeFiles/DartSync.dir/BackupManager.cpp.obj: C:/Users/weare/CLionProjects/DartSync/BackupManager.cpp
-CMakeFiles/DartSync.dir/BackupManager.cpp.obj: CMakeFiles/DartSync.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\weare\CLionProjects\DartSync\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/DartSync.dir/BackupManager.cpp.obj"
-	C:\PROGRA~2\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DartSync.dir/BackupManager.cpp.obj -MF CMakeFiles\DartSync.dir\BackupManager.cpp.obj.d -o CMakeFiles\DartSync.dir\BackupManager.cpp.obj -c C:\Users\weare\CLionProjects\DartSync\BackupManager.cpp
+CMakeFiles/DartSync.dir/src/main.cpp.obj: CMakeFiles/DartSync.dir/flags.make
+CMakeFiles/DartSync.dir/src/main.cpp.obj: CMakeFiles/DartSync.dir/includes_CXX.rsp
+CMakeFiles/DartSync.dir/src/main.cpp.obj: C:/Users/weare/CLionProjects/DartSync/src/main.cpp
+CMakeFiles/DartSync.dir/src/main.cpp.obj: CMakeFiles/DartSync.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=C:\Users\weare\CLionProjects\DartSync\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/DartSync.dir/src/main.cpp.obj"
+	C:\PROGRA~2\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/DartSync.dir/src/main.cpp.obj -MF CMakeFiles\DartSync.dir\src\main.cpp.obj.d -o CMakeFiles\DartSync.dir\src\main.cpp.obj -c C:\Users\weare\CLionProjects\DartSync\src\main.cpp
 
-CMakeFiles/DartSync.dir/BackupManager.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/DartSync.dir/BackupManager.cpp.i"
-	C:\PROGRA~2\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\weare\CLionProjects\DartSync\BackupManager.cpp > CMakeFiles\DartSync.dir\BackupManager.cpp.i
+CMakeFiles/DartSync.dir/src/main.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/DartSync.dir/src/main.cpp.i"
+	C:\PROGRA~2\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\weare\CLionProjects\DartSync\src\main.cpp > CMakeFiles\DartSync.dir\src\main.cpp.i
 
-CMakeFiles/DartSync.dir/BackupManager.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/DartSync.dir/BackupManager.cpp.s"
-	C:\PROGRA~2\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\weare\CLionProjects\DartSync\BackupManager.cpp -o CMakeFiles\DartSync.dir\BackupManager.cpp.s
+CMakeFiles/DartSync.dir/src/main.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/DartSync.dir/src/main.cpp.s"
+	C:\PROGRA~2\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\weare\CLionProjects\DartSync\src\main.cpp -o CMakeFiles\DartSync.dir\src\main.cpp.s
 
 # Object files for target DartSync
 DartSync_OBJECTS = \
-"CMakeFiles/DartSync.dir/main.cpp.obj" \
-"CMakeFiles/DartSync.dir/BackupManager.cpp.obj"
+"CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj" \
+"CMakeFiles/DartSync.dir/src/main.cpp.obj"
 
 # External object files for target DartSync
 DartSync_EXTERNAL_OBJECTS =
 
-DartSync.exe: CMakeFiles/DartSync.dir/main.cpp.obj
-DartSync.exe: CMakeFiles/DartSync.dir/BackupManager.cpp.obj
+DartSync.exe: CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj
+DartSync.exe: CMakeFiles/DartSync.dir/src/main.cpp.obj
 DartSync.exe: CMakeFiles/DartSync.dir/build.make
 DartSync.exe: CMakeFiles/DartSync.dir/linkLibs.rsp
 DartSync.exe: CMakeFiles/DartSync.dir/objects1.rsp

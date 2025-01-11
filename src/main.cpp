@@ -68,10 +68,33 @@ std::string getDirectoryPath(const std::string& prompt) {
     return path;
 }
 
+// Function to get backup options from the user
+void getBackupOptions(std::vector<std::string>& fileTypes,
+                      std::string& keyword,
+                      size_t& maxFileSizeMB) {
+    // Get file types
+    fileTypes = getFileTypes();
+
+    // Get keyword
+    std::cout << "Enter a keyword to filter files (leave empty to include all files): ";
+    std::getline(std::cin, keyword);
+
+    // Get maximum file size
+    std::cout << "Enter the maximum file size in MB (0 for no limit): ";
+    std::string sizeInput;
+    std::getline(std::cin, sizeInput);
+    try {
+        maxFileSizeMB = std::stoul(sizeInput);
+    }
+    catch (...) {
+        maxFileSizeMB = 0;
+    }
+}
+
 int main() {
     BackupManager backupManager;
     while (true) {
-        std::cout << "=== DartSync10 Backup Service ===\n";
+        std::cout << "=== DartSync Backup Service ===\n";
         std::cout << "1) Backup a folder once\n";
         std::cout << "2) Backup a folder on a schedule\n";
         std::cout << "3) Exit\n";
@@ -83,7 +106,11 @@ int main() {
         if (choice == "1") {
             // Backup once
             std::string source = getDirectoryPath("Enter the source directory to backup: ");
-            std::vector<std::string> fileTypes = getFileTypes();
+            std::vector<std::string> fileTypes;
+            std::string keyword;
+            size_t maxFileSizeMB;
+            getBackupOptions(fileTypes, keyword, maxFileSizeMB);
+
             // Get output directory
             char* userProfile = getenv("USERPROFILE");
             std::string defaultDownload = userProfile ? std::string(userProfile) + "\\Downloads" : "C:\\Users\\Default\\Downloads";
@@ -93,12 +120,18 @@ int main() {
             if (output.empty()) {
                 output = defaultDownload;
             }
-            backupManager.backupOnce(source, output, fileTypes);
+
+            // Perform backup
+            backupManager.backupOnce(source, output, fileTypes, keyword, maxFileSizeMB);
         }
         else if (choice == "2") {
             // Backup on schedule
             std::string source = getDirectoryPath("Enter the source directory to backup: ");
-            std::vector<std::string> fileTypes = getFileTypes();
+            std::vector<std::string> fileTypes;
+            std::string keyword;
+            size_t maxFileSizeMB;
+            getBackupOptions(fileTypes, keyword, maxFileSizeMB);
+
             // Get output directory
             char* userProfile = getenv("USERPROFILE");
             std::string defaultDownload = userProfile ? std::string(userProfile) + "\\Downloads" : "C:\\Users\\Default\\Downloads";
@@ -108,17 +141,37 @@ int main() {
             if (output.empty()) {
                 output = defaultDownload;
             }
-            // Get schedule interval
-            std::cout << "Enter backup interval in seconds: ";
-            int interval;
-            std::cin >> interval;
-            std::cin.ignore(); // Ignore remaining newline
+
+            // Get schedule type
+            std::cout << "Choose a schedule type (daily, weekly, monthly, custom): ";
+            std::string scheduleType;
+            std::getline(std::cin, scheduleType);
+            std::transform(scheduleType.begin(), scheduleType.end(), scheduleType.begin(), ::tolower);
+
+            int interval = 0;
+            if (scheduleType == "custom") {
+                std::cout << "Enter the interval in seconds: ";
+                std::string intervalInput;
+                std::getline(std::cin, intervalInput);
+                try {
+                    interval = std::stoi(intervalInput);
+                    if (interval <= 0) {
+                        std::cout << "Invalid interval. Defaulting to 60 seconds.\n";
+                        interval = 60;
+                    }
+                }
+                catch (...) {
+                    std::cout << "Invalid input. Defaulting to 60 seconds.\n";
+                    interval = 60;
+                }
+            }
+
             // Start scheduled backup
-            std::cout << "Starting scheduled backups every " << interval << " seconds. Press Ctrl+C to exit.\n";
-            backupManager.backupScheduled(source, output, fileTypes, interval);
+            std::cout << "Starting scheduled backups. Press Ctrl+C to exit.\n";
+            backupManager.backupScheduled(source, output, fileTypes, keyword, maxFileSizeMB, scheduleType, interval);
         }
         else if (choice == "3") {
-            std::cout << "Exiting DartSync10. Goodbye!\n";
+            std::cout << "Exiting DartSync Backup Service. Goodbye!\n";
             break;
         }
         else {

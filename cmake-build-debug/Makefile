@@ -128,53 +128,53 @@ DartSync/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/build
 .PHONY : DartSync/fast
 
-BackupManager.obj: BackupManager.cpp.obj
-.PHONY : BackupManager.obj
+src/BackupManager.obj: src/BackupManager.cpp.obj
+.PHONY : src/BackupManager.obj
 
 # target to build an object file
-BackupManager.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/BackupManager.cpp.obj
-.PHONY : BackupManager.cpp.obj
+src/BackupManager.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj
+.PHONY : src/BackupManager.cpp.obj
 
-BackupManager.i: BackupManager.cpp.i
-.PHONY : BackupManager.i
+src/BackupManager.i: src/BackupManager.cpp.i
+.PHONY : src/BackupManager.i
 
 # target to preprocess a source file
-BackupManager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/BackupManager.cpp.i
-.PHONY : BackupManager.cpp.i
+src/BackupManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/src/BackupManager.cpp.i
+.PHONY : src/BackupManager.cpp.i
 
-BackupManager.s: BackupManager.cpp.s
-.PHONY : BackupManager.s
+src/BackupManager.s: src/BackupManager.cpp.s
+.PHONY : src/BackupManager.s
 
 # target to generate assembly for a file
-BackupManager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/BackupManager.cpp.s
-.PHONY : BackupManager.cpp.s
+src/BackupManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/src/BackupManager.cpp.s
+.PHONY : src/BackupManager.cpp.s
 
-main.obj: main.cpp.obj
-.PHONY : main.obj
+src/main.obj: src/main.cpp.obj
+.PHONY : src/main.obj
 
 # target to build an object file
-main.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/main.cpp.obj
-.PHONY : main.cpp.obj
+src/main.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/src/main.cpp.obj
+.PHONY : src/main.cpp.obj
 
-main.i: main.cpp.i
-.PHONY : main.i
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/main.cpp.i
-.PHONY : main.cpp.i
+src/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/main.cpp.s
-.PHONY : main.cpp.s
+src/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\DartSync.dir\build.make CMakeFiles/DartSync.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 # Help Target
 help:
@@ -185,12 +185,12 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... DartSync
-	@echo ... BackupManager.obj
-	@echo ... BackupManager.i
-	@echo ... BackupManager.s
-	@echo ... main.obj
-	@echo ... main.i
-	@echo ... main.s
+	@echo ... src/BackupManager.obj
+	@echo ... src/BackupManager.i
+	@echo ... src/BackupManager.s
+	@echo ... src/main.obj
+	@echo ... src/main.i
+	@echo ... src/main.s
 .PHONY : help
 
 

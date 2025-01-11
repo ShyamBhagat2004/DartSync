@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/DartSync.dir/BackupManager.cpp.obj"
-  "CMakeFiles/DartSync.dir/BackupManager.cpp.obj.d"
-  "CMakeFiles/DartSync.dir/main.cpp.obj"
-  "CMakeFiles/DartSync.dir/main.cpp.obj.d"
+  "CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj"
+  "CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj.d"
+  "CMakeFiles/DartSync.dir/src/main.cpp.obj"
+  "CMakeFiles/DartSync.dir/src/main.cpp.obj.d"
   "DartSync.exe"
   "DartSync.exe.manifest"
   "DartSync.pdb"

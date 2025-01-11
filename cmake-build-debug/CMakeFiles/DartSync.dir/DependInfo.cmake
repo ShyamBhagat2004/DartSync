@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "C:/Users/weare/CLionProjects/DartSync/BackupManager.cpp" "CMakeFiles/DartSync.dir/BackupManager.cpp.obj" "gcc" "CMakeFiles/DartSync.dir/BackupManager.cpp.obj.d"
-  "C:/Users/weare/CLionProjects/DartSync/main.cpp" "CMakeFiles/DartSync.dir/main.cpp.obj" "gcc" "CMakeFiles/DartSync.dir/main.cpp.obj.d"
+  "C:/Users/weare/CLionProjects/DartSync/src/BackupManager.cpp" "CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj" "gcc" "CMakeFiles/DartSync.dir/src/BackupManager.cpp.obj.d"
+  "C:/Users/weare/CLionProjects/DartSync/src/main.cpp" "CMakeFiles/DartSync.dir/src/main.cpp.obj" "gcc" "CMakeFiles/DartSync.dir/src/main.cpp.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
