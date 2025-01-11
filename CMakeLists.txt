@@ -4,7 +4,7 @@ project(DartSync)
 # Set the C++ standard to C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-
+set(CMAKE_EXE_LINKER_FLAGS "-static")
 # Include directories for project headers
 include_directories(src)
 
