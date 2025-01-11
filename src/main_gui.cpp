@@ -4,7 +4,8 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
-#include <thread>          // <-- For std::thread
+#include <thread>          // For std::thread
+#include <vector>
 #include "BackupManager.h"
 #include "ConsoleRedirect.h"
 
@@ -24,30 +25,34 @@ static HWND hOnceRadio        = nullptr;
 static HWND hDailyRadio       = nullptr;
 static HWND hMonthlyRadio     = nullptr;
 
-static HWND hConsoleLabel     = nullptr;
-static HWND hConsoleOutput    = nullptr; // multiline edit
+static HWND hFileTypesLabel   = nullptr;
+static HWND hFileTypesEdit    = nullptr;  // new
+static HWND hMaxSizeLabel     = nullptr;
+static HWND hMaxSizeEdit      = nullptr;  // new
 
-// Global vars to store user selections
+static HWND hConsoleLabel     = nullptr;
+static HWND hConsoleOutput    = nullptr;
+
+// Global vars
 static std::wstring gSourcePath;
 static std::wstring gDestPath;
 static std::wstring gFrequency = L"once"; // default
+static BackupManager gBackupManager;
 
-// The console streambuf
 static EditStreamBuf* gEditBuf = nullptr;
-static BackupManager  gBackupManager; // Our backup logic
 
-// Forward declarations
+// Fwd declarations
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 void PickFolder(std::wstring& outFolder);
 void UpdateChosenPathLabel(HWND labelHwnd, const std::wstring& path);
 void OnRadioFrequency(HWND radioClicked);
 void BuildAndRunCommand();
 
-// The main WinMain
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpCmdLine, int nCmdShow)
 {
     CoInitialize(nullptr);
+
     WNDCLASSW wc = {0};
     wc.lpfnWndProc   = WndProc;
     wc.hInstance     = hInstance;
@@ -63,7 +68,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         wc.lpszClassName,
         L"DartSyncGUI",
         WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, CW_USEDEFAULT, 620, 520,
+        CW_USEDEFAULT, CW_USEDEFAULT, 700, 560,
         nullptr, nullptr, hInstance, nullptr
     );
 
@@ -85,6 +90,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     return (int)msg.wParam;
 }
 
+// Browse for folder
 void PickFolder(std::wstring& outFolder)
 {
     BROWSEINFOW bi = {0};
@@ -118,7 +124,24 @@ void OnRadioFrequency(HWND radioClicked)
     }
 }
 
-// The function that calls the backup
+// Convert wide string with space-separated extensions into vector<string>
+std::vector<std::string> parseExtensions(const std::wstring& wext)
+{
+    std::vector<std::string> exts;
+    if (wext.empty()) return exts; // empty => no filter => all files
+
+    // naive split on spaces
+    std::wstringstream wss(wext);
+    std::wstring token;
+    while (wss >> token) {
+        // Convert to narrow
+        std::string narrow(token.begin(), token.end());
+        exts.push_back(narrow);
+    }
+    return exts;
+}
+
+// The function that calls the backup in the background
 void BuildAndRunCommand()
 {
     if (gSourcePath.empty() || gDestPath.empty()) {
@@ -126,35 +149,56 @@ void BuildAndRunCommand()
         return;
     }
 
+    // Grab file extension filter from the UI
+    wchar_t extBuf[512];
+    GetWindowTextW(hFileTypesEdit, extBuf, 512);
+    std::wstring wExtStr(extBuf);
+    auto fileTypes = parseExtensions(wExtStr);
+
+    // Grab max size
+    wchar_t sizeBuf[64];
+    GetWindowTextW(hMaxSizeEdit, sizeBuf, 64);
+    size_t maxFileSizeMB = 0;
+    if (wcslen(sizeBuf) > 0) {
+        // Convert to narrow and parse
+        std::wstring ws(sizeBuf);
+        std::string narrow(ws.begin(), ws.end());
+        try {
+            maxFileSizeMB = std::stoul(narrow);
+        } catch(...) {
+            std::cout << "Warning: invalid max size. Using 0 (no limit).\n";
+        }
+    }
+
     std::string sourceNarrow(gSourcePath.begin(), gSourcePath.end());
     std::string destNarrow(gDestPath.begin(), gDestPath.end());
 
     if (gFrequency == L"once") {
         std::cout << "Running one-time backup...\n";
-        std::vector<std::string> fileTypes;
-        gBackupManager.backupOnce(sourceNarrow, destNarrow, fileTypes, "", 0);
+        gBackupManager.backupOnce(sourceNarrow, destNarrow,
+                                  fileTypes, "", maxFileSizeMB);
     }
     else if (gFrequency == L"daily") {
         std::cout << "Running daily scheduled backup...\n";
-        std::vector<std::string> fileTypes;
-        gBackupManager.backupScheduled(sourceNarrow, destNarrow, fileTypes, "",
-                                       0, "daily", 0);
+        gBackupManager.backupScheduled(sourceNarrow, destNarrow,
+                                       fileTypes, "", maxFileSizeMB,
+                                       "daily", 0);
     }
     else if (gFrequency == L"monthly") {
         std::cout << "Running monthly scheduled backup...\n";
-        std::vector<std::string> fileTypes;
-        gBackupManager.backupScheduled(sourceNarrow, destNarrow, fileTypes, "",
-                                       0, "monthly", 0);
+        gBackupManager.backupScheduled(sourceNarrow, destNarrow,
+                                       fileTypes, "", maxFileSizeMB,
+                                       "monthly", 0);
     }
     else {
         std::cout << "No valid frequency selected.\n";
     }
 }
 
-// The window procedure
+// The Window Procedure
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    switch (msg) {
+    switch(msg) {
     case WM_CREATE:
         {
             // Title
@@ -181,11 +225,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             hSourceChosenLbl = CreateWindowW(
                 L"STATIC", L"Chosen: ",
                 WS_CHILD | WS_VISIBLE,
-                250, 50, 300, 20,
+                250, 50, 400, 20,
                 hWnd, nullptr, nullptr, nullptr
             );
 
-            // Dest row
+            // Destination row
             hDestLabel = CreateWindowW(
                 L"STATIC", L"Select Destination Folder",
                 WS_CHILD | WS_VISIBLE,
@@ -201,7 +245,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             hDestChosenLbl = CreateWindowW(
                 L"STATIC", L"Chosen: ",
                 WS_CHILD | WS_VISIBLE,
-                250, 90, 300, 20,
+                250, 90, 400, 20,
                 hWnd, nullptr, nullptr, nullptr
             );
 
@@ -231,15 +275,42 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 220, 170, 80, 20,
                 hWnd, (HMENU)203, nullptr, nullptr
             );
-
-            // "Once" default
+            // Default "Once"
             SendMessageW(hOnceRadio, BM_SETCHECK, BST_CHECKED, 0);
+
+            // File Types row
+            hFileTypesLabel = CreateWindowW(
+                L"STATIC", L"File Extensions (e.g. .dll .txt):",
+                WS_CHILD | WS_VISIBLE,
+                20, 210, 220, 20,
+                hWnd, nullptr, nullptr, nullptr
+            );
+            hFileTypesEdit = CreateWindowW(
+                L"EDIT", L"",
+                WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+                240, 205, 160, 25,
+                hWnd, nullptr, nullptr, nullptr
+            );
+
+            // Max Size row
+            hMaxSizeLabel = CreateWindowW(
+                L"STATIC", L"Max File Size MB (0 = no limit):",
+                WS_CHILD | WS_VISIBLE,
+                20, 245, 220, 20,
+                hWnd, nullptr, nullptr, nullptr
+            );
+            hMaxSizeEdit = CreateWindowW(
+                L"EDIT", L"",
+                WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+                240, 240, 80, 25,
+                hWnd, nullptr, nullptr, nullptr
+            );
 
             // Start Backup button
             CreateWindowW(
                 L"BUTTON", L"Start Backup",
                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                320, 165, 100, 30,
+                350, 235, 100, 30,
                 hWnd, (HMENU)301, nullptr, nullptr
             );
 
@@ -247,15 +318,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             hConsoleLabel = CreateWindowW(
                 L"STATIC", L"Console:",
                 WS_CHILD | WS_VISIBLE,
-                20, 210, 100, 20,
+                20, 285, 100, 20,
                 hWnd, nullptr, nullptr, nullptr
             );
 
             // Console multiline
             hConsoleOutput = CreateWindowW(
                 L"EDIT", L"",
-                WS_CHILD | WS_VISIBLE | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL | WS_BORDER,
-                20, 240, 560, 200,
+                WS_CHILD | WS_VISIBLE | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY |
+                WS_VSCROLL | WS_BORDER,
+                20, 310, 640, 200,
                 hWnd, nullptr, nullptr, nullptr
             );
 
@@ -265,7 +337,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
             std::cout.rdbuf(gEditBuf);
 
             std::cout << "Welcome to DartSyncGUI!\n"
-                      << "Pick your source & destination, choose frequency, then Start Backup.\n";
+                      << "Pick source/dest, set frequency, optionally set extensions or max file size, then Start.\n";
         }
         break;
     case WM_COMMAND:
@@ -285,8 +357,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 OnRadioFrequency((HWND)lParam);
             }
             else if (wmId == 301) {
-                // Start Backup button
-                // Launch in background thread so GUI doesn't freeze
+                // Start Backup in background thread
                 std::thread worker([](){
                     BuildAndRunCommand();
                 });
