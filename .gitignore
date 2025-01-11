@@ -1,6 +1,20 @@
-# Ignore CMake build directories
-cmake-build-debug/
+# Ignore Visual Studio or CLion's CMake build directories
+cmake-build-*
+CMakeFiles/
+CMakeCache.txt
 
+# Ignore other common build system stuff
+Makefile
+compile_commands.json
+install_manifest.txt
 
+# Ignore Windows executables
+*.exe
 
-
+# (Optionally) Ignore object/intermediate files
+*.obj
+*.o
+*.pdb
+*.ilk
+*.pch
+*.log
