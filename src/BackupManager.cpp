@@ -11,7 +11,7 @@
 
 namespace fs = std::filesystem;
 
-// Optional mutex for console output
+// Mutex for thread-safe console output
 static std::mutex coutMutex;
 
 BackupManager::BackupManager() {
@@ -27,6 +27,40 @@ void BackupManager::backupOnce(const std::string& sourcePath,
     performBackup(sourcePath, outputPath, fileTypes, keyword, maxFileSizeMB);
 }
 
+void BackupManager::backupScheduled(const std::string& sourcePath,
+                                    const std::string& outputPath,
+                                    const std::vector<std::string>& fileTypes,
+                                    const std::string& keyword,
+                                    size_t maxFileSizeMB,
+                                    const std::string& scheduleType,
+                                    int intervalSeconds)
+{
+    while (true) {
+        performBackup(sourcePath, outputPath, fileTypes, keyword, maxFileSizeMB);
+
+        // Sleep logic based on scheduleType
+        if (scheduleType == "daily") {
+            std::this_thread::sleep_for(std::chrono::hours(24));
+        }
+        else if (scheduleType == "weekly") {
+            std::this_thread::sleep_for(std::chrono::hours(24 * 7));
+        }
+        else if (scheduleType == "monthly") {
+            // Approximate as 30 days
+            std::this_thread::sleep_for(std::chrono::hours(24 * 30));
+        }
+        else if (scheduleType == "custom") {
+            std::this_thread::sleep_for(std::chrono::seconds(intervalSeconds));
+        }
+        else {
+            std::lock_guard<std::mutex> lock(coutMutex);
+            std::cout << "Unknown schedule type. Defaulting to custom interval of "
+                      << intervalSeconds << " seconds.\n";
+            std::this_thread::sleep_for(std::chrono::seconds(intervalSeconds));
+        }
+    }
+}
+
 void BackupManager::performBackup(const std::string& sourcePath,
                                   const std::string& outputPath,
                                   const std::vector<std::string>& fileTypes,
@@ -39,7 +73,7 @@ void BackupManager::performBackup(const std::string& sourcePath,
             std::cout << "Generating versioned backup directory...\n";
         }
 
-        // Create or get versioned directory
+        // Create or get versioned output directory
         std::string versionedOutput = getVersionedPath(outputPath);
         fs::create_directories(versionedOutput);
 
@@ -54,26 +88,26 @@ void BackupManager::performBackup(const std::string& sourcePath,
         uintmax_t totalBytes = 0;
 
         for (const auto& entry : fs::recursive_directory_iterator(sourcePath)) {
-            if (fs::is_regular_file(entry.path())) {
+            if (fs::is_regular_file(entry.status())) {
                 // File type filter
-                if (!fileTypes.empty()) {
-                    auto ext = entry.path().extension().string();
-                    if (std::find(fileTypes.begin(), fileTypes.end(), ext) == fileTypes.end())
-                        continue;
+                if (!fileTypes.empty() &&
+                    std::find(fileTypes.begin(), fileTypes.end(),
+                              entry.path().extension().string()) == fileTypes.end()) {
+                    continue;
                 }
 
                 // Keyword filter
-                if (!keyword.empty()) {
-                    auto fname = entry.path().filename().string();
-                    if (fname.find(keyword) == std::string::npos)
-                        continue;
+                if (!keyword.empty() &&
+                    entry.path().filename().string().find(keyword) == std::string::npos) {
+                    continue;
                 }
 
-                // Max file size filter
+                // Size filter
                 uintmax_t fileSize = fs::file_size(entry.path());
-                auto fileSizeMB = static_cast<size_t>(fileSize / (1024 * 1024));
-                if (maxFileSizeMB > 0 && fileSizeMB > maxFileSizeMB)
+                size_t fileSizeInMB = static_cast<size_t>(fileSize / (1024 * 1024));
+                if (maxFileSizeMB > 0 && fileSizeInMB > maxFileSizeMB) {
                     continue;
+                }
 
                 filesToBackup.push_back(entry.path());
                 totalBytes += fileSize;
@@ -97,7 +131,7 @@ void BackupManager::performBackup(const std::string& sourcePath,
             std::cout << "Starting backup of " << filesToBackup.size() << " files...\n";
         }
 
-        // Single-thread copying
+        // Copy them one by one
         uintmax_t bytesCopied = 0;
         for (const auto& filePath : filesToBackup) {
             try {
@@ -105,33 +139,38 @@ void BackupManager::performBackup(const std::string& sourcePath,
                 fs::path destination = fs::path(versionedOutput) / relativePath;
                 fs::create_directories(destination.parent_path());
 
-                // Print which file is being copied (only filename)
                 {
                     std::lock_guard<std::mutex> lock(coutMutex);
-                    std::cout << "Copying file: " << filePath.filename().string() << "\n";
+                    std::cout << "Copying file: " << filePath.filename().string()
+                              << " to " << destination.filename().string() << "\n";
                 }
 
                 fs::copy_file(filePath, destination, fs::copy_options::overwrite_existing);
-                bytesCopied += fs::file_size(filePath);
 
-                // If you want progress, you could do something like:
-                /*
-                double progress = static_cast<double>(bytesCopied) / totalBytes * 100.0;
-                {
-                    std::lock_guard<std::mutex> lock(coutMutex);
-                    std::cout << "Progress: " << progress << "%\n";
-                }
-                */
+                uintmax_t fileSize = fs::file_size(filePath);
+                bytesCopied += fileSize;
+
+                // Display progress
+                displayProgress(bytesCopied, totalBytes);
             }
             catch (const fs::filesystem_error& e) {
                 std::lock_guard<std::mutex> lock(coutMutex);
-                std::cerr << "Failed to copy " << filePath << ": " << e.what() << "\n";
+                std::cerr << "\nFailed to copy "
+                          << filePath.filename().string()
+                          << ": " << e.what() << "\n";
+            }
+            catch (const std::exception& e) {
+                std::lock_guard<std::mutex> lock(coutMutex);
+                std::cerr << "\nGeneral error copying "
+                          << filePath.filename().string()
+                          << ": " << e.what() << "\n";
             }
         }
 
         {
             std::lock_guard<std::mutex> lock(coutMutex);
-            std::cout << "\nBackup completed successfully in directory: " << versionedOutput << "\n";
+            std::cout << "\nBackup completed successfully in directory: "
+                      << versionedOutput << "\n";
         }
     }
     catch (const fs::filesystem_error& e) {
@@ -162,6 +201,33 @@ std::string BackupManager::getVersionedPath(const std::string& destination) {
     fs::path destPath(destination);
     fs::path versionedPath = destPath / ("Backup" + timestamp);
     return versionedPath.string();
+}
+
+void BackupManager::displayProgress(uintmax_t bytesCopied, uintmax_t totalBytes) {
+    if (totalBytes == 0) return;
+
+    double progress = static_cast<double>(bytesCopied) / totalBytes;
+    double percentage = progress * 100.0;
+
+    static int lastPercentage = -1;
+    int currentPercentage = static_cast<int>(percentage);
+
+    if (currentPercentage != lastPercentage) {
+        const int barWidth = 50;
+        int pos = static_cast<int>(barWidth * progress);
+
+        std::lock_guard<std::mutex> lock(coutMutex);
+        std::cout << "\rProgress: [";
+        for (int i = 0; i < barWidth; ++i) {
+            if (i < pos)      std::cout << "=";
+            else if (i == pos)std::cout << ">";
+            else             std::cout << " ";
+        }
+        std::cout << "] " << std::fixed << std::setprecision(2)
+                  << percentage << "%" << std::flush;
+
+        lastPercentage = currentPercentage;
+    }
 }
 
 std::string BackupManager::formatSize(uintmax_t bytes) const {
