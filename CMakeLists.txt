@@ -1,19 +1,20 @@
 cmake_minimum_required(VERSION 3.15)
-project(DartSync)
+project(DartSyncGUI)
 
-# Set the C++ standard to C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# (Optional) Link statically on Windows
 set(CMAKE_EXE_LINKER_FLAGS "-static")
-# Include directories for project headers
-include_directories(src)
 
-# Collect all source files in the src directory
-file(GLOB SOURCES "src/*.cpp")
+# -------------------------------
+# Add these definitions to enable wide-character APIs:
+add_definitions(-DUNICODE -D_UNICODE)
+# -------------------------------
 
-# Define the executable target
-add_executable(DartSync ${SOURCES})
+file(GLOB SOURCES
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+)
 
-# If you have other libraries to link in the future, add them here
-# Example:
-# target_link_libraries(DartSync PRIVATE SomeOtherLibrary)
+add_executable(DartSyncGUI WIN32 ${SOURCES})
