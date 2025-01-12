@@ -82,27 +82,12 @@ DartSyncGUI is a Windows-based GUI application for managing versioned backups of
 └── README.md                     # Project documentation
 ```
 
----
 
-## Dependencies
-
-- **Windows API**: Required for GUI elements (e.g., `CreateWindowW`, `SHBrowseForFolderW`).
-- **Shell32**: Linked for folder browsing dialogs.
 
 ---
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
-1. Fork the repository.
-2. Create a new branch:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-3. Submit a pull request describing your changes.
+Contributions are welcome! 
 
----
 
-## License
-
-This project is licensed under the terms specified in the `LICENSE` file.
